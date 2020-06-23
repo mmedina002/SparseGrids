@@ -1,5 +1,4 @@
 module SparseGrids
 
-greet() = print("Hello World!")
-
+include("LinearInterpolation.jl")
 end # module
