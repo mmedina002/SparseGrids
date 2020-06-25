@@ -2,6 +2,7 @@ export line
 export find_interval
 export interpolate
 
+
 function line(x1::T,y1::T,x2::T,y2::T,xeval::T)::T where T
     m = (y1-y2)/(x1-x2)
     b = y2-(m*x2)
