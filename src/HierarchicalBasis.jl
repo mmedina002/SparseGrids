@@ -15,4 +15,11 @@ hierarchicalbase(1, 1, 2.0)
 
 #plot hierarchical basis function for different ls and js across different xs
 #hierarchicalbase.(l,j,x)
-#
+
+x = collect(1.0:20.0)
+l = 2
+j = 3
+values = hierarchicalbase.(l,j,x)
+
+plot(x,values)
+ 
