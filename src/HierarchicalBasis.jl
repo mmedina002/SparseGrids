@@ -43,11 +43,13 @@ end
 
 #************  INDEX  ******************************** 
 function maxlevel(H::HierarchicalBasis{T})::Int where {T} #gives the highest level (l-1 because we are considering level 0) 
+	@show length(H.levels) - 1 
 	return length(H.levels) - 1 
 end
 
 function maxlevel(N::NodalBasis{T})::Int where {T}
-	return log2(length(N.values1) - 1)
+	@show  log2(length(N.values) - 1)
+	return log2(length(N.values) - 1)
 end
 
 #function getindex now works with Hierarchical Bases
@@ -102,46 +104,57 @@ end
 
 #Nodal to Hierarchical Basis
 function Base.zeros(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
-	H = [Level([0,0])]
+	H = [[0.0,0.0]]
 	for l in 1:maxlevel(N)
-		append!(H, Level(zeros(T, l)))
+		@show typeof(H)
+		@show typeof(zeros(T, l))
+		append!(H, zeros(T, l))
+		@show H
 	end
-	return HierarchicalBasis(H)
+	@show Level.(H)
+	return HierarchicalBasis(Level.(H))
 end
 
-function H_2_Nodal(H::HierarchicalBasis{T})::NodalBasis{T} where {T}
-	N = zeros(H)
-	N[0] = H[0,0]
-	N[end] = H[0,1]
-	for j in 1:2^l - 1
-		N[j] = evaluate(H, x(l,j))
-	end
-	return N
-end
-
-function Nodal_2_H(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
-	H = zeros(N)
-	H[0, 0] = N[0]
-	H[0, 1] = N[end]
-	for l in 1:maxlevel(N), j in 1:2:2^l
-		H[l,j] = N[j] - evaluate(H, x(l,j))
-	end
-	return H
-end
+# function H_2_Nodal(H::HierarchicalBasis{T})::NodalBasis{T} where {T}
+# 	N = zeros(H)
+# 	N[0] = H[0,0]
+# 	N[end] = H[0,1]
+# 	for j in 1:2^l - 1
+# 		N[j] = evaluate(H, x(l,j))
+# 	end
+# 	return N
+# end
+#
+# function Nodal_2_H(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
+# 	H = zeros(N)
+# 	H[0, 0] = N[0]
+# 	H[0, 1] = N[end]
+# 	for l in 1:maxlevel(N), j in 1:2:2^l
+# 		H[l,j] = N[j] - evaluate(H, x(l,j))
+# 	end
+# 	return H
+# end
 
 level0 = Level([1.0,3.0])
 level1 = Level([2.0])
 level2 = Level([3.0,4.0])
 bases = HierarchicalBasis([level0,level1,level2])
-max = maxlevel(bases)
-index = Base.getindex(bases,1,1)
-valueTest = evaluate(bases, 0.5)
-
-xvalues = collect(range(0, stop=1, length = 10))
+# max = maxlevel(bases)
+# index = Base.getindex(bases,1,1)
+# valueTest = evaluate(bases, 0.5)
+#
+# xvalues = collect(range(0, stop=1, length = 10))
 #plot(xvalues, bases)
 
-println(index)
-println(valueTest)
+# zero = zeros(bases)
+# println(zero)
+
+n = NodalBasis([1.0,2.0,3.0])
+zero = zeros(n)
+println(zero)
+
+# println(index)
+# println(valueTest)
 #println(valueTest)
 
 
