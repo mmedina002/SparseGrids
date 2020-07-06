@@ -26,3 +26,5 @@ plot(x, basis.(3, 7, x), "m")
 
 xlabel("x")
 ylabel("phi(x)")
+
+value = calcNodal(x -> exp(x), xVal)
