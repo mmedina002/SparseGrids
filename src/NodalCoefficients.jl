@@ -10,15 +10,14 @@ function calcNodal(u::Function, x::Array{T})::Array{T} where {T}
 	return coefficients
 end
 
-xVal = collect(range(0.0, stop=1.0, length = 10))
+xVal = collect(range(0.0, stop=1.0, length = 9))
 y = exp.(xVal)
 
 #plot(xVal,y,"y")
+ value = calcNodal(x -> exp(x), xVal)
+ nodal = NodalBasis(value)
+ max = maxlevel(nodal)
+ newValues = Nodal_2_H(nodal)
 
-value = calcNodal(x -> exp(x), xVal)
-nodal = NodalBasis(value)
-newCoeff = Nodal_2_H(nodal)
-
-println(value)
-println(nodal)
-println(newCoeff)
+# println(nodal)
+println(newValues)
