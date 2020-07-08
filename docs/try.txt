@@ -1,5 +1,0 @@
-nano is a simple text editor
-
-changes something
-
-I'm adding stuff using the Git Hub editor
