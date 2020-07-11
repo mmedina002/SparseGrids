@@ -48,34 +48,35 @@ Function getindex now works with Hierarchical Bases
 """
 function Base.getindex(H::HierarchicalBasis{T}, l::Int, j::Int)::T where {T}
 	@assert 0 <= l <= maxlevel(H)
-	if l == 0 
-		@assert 0 <= j <= 1
-		return (H.levels[l+1]).coefficients[j+1]
-	else 
-		@assert 0 <= j <= (2^(l-1))-1
-		return H.levels[l+1].coefficients[j+1] 
-	end
+	@assert 0 <= j <= (2^l)
+	return H.levels[l+1].coefficients[j+1]
 end
 
-function Base.getindex(N::NodalBasis{T},j::Int)::T where {T}
+function Base.getindex(N::NodalBasis{T}, j::Int)::T where {T}
 	@assert 0 <= j <= (2^maxlevel(N))
 	return N.values[j+1]
 end
 
 function Base.setindex!(H::HierarchicalBasis{T}, X::T, l::Int, j::Int)::T where {T}
 	@assert 0 <= l <= maxlevel(H)
-	if l == 0 
-		@assert 0 <= j <= 1
-		(H.levels[l+1]).coefficients[j+1] = X
-	else
-		@assert 0 <= j <= (2^(l-1))-1
-		(H.levels[l+1]).coefficients[j+1] = X
-	end
+	@assert 0 <= j <= (2^l)
+	H.levels[l+1].coefficients[j+1] = X
 end
 
 function Base.setindex!(N::NodalBasis{T}, X::T, j::Int)::T where {T}
 	@assert 0 <= j <= (2^maxlevel(N))
 	N.values[j+1] = X
+end
+
+function Base.getindex(N::NodalBasis{T}, l::Int, j::Int)::T where {T}
+	@assert 0 <= l <= maxlevel(N)
+	@assert 0 <= j <= (2^maxlevel(N))
+	J = 2^(maxlevel(N)-l)*j 
+	return N.values[J+1]
+end
+
+function Base.lastindex(N::NodalBasis{T})::Int where {T}
+	return length(N.values) - 1
 end
 
 #************ BASIS TRANSFORMATIONS ******************************** 
@@ -88,9 +89,6 @@ Evaluating hat functions at each level l, at position j, at point x
 function basis(l::Int, j::Int, x::T)::T where {T}
 	@assert 0 <= l 
 	@assert 0 <= j <= (2^l) 
-	if l != 0
-		@assert isodd(j) 
-	end
 	h = 2.0^(-l)
 	if (h*(j - 1) <= x <= h*(j + 1)) && (0 <= x <= 1)  
 		value = 1 - abs((x/h) - j)
@@ -109,9 +107,9 @@ end
 The coefficients of a hierarchical basis are added 
 """
 function evaluate(H::HierarchicalBasis{T}, x::T)::T where {T} 
-	value = H[0, 0]*basis(0, 0, x) + H[0, 1]*basis(0, 1, x)
-	for l in 1:maxlevel(H)
-		for j in 1:2:2^l
+	value = T(0)
+	for l in 0:maxlevel(H)
+		for j in 0:2^l
 			value = value + H[l, j]*basis(l, j, x)
 		end
 	end
@@ -124,29 +122,25 @@ end
 
 
 function Base.zeros(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
-	H = [Level([0.0,0.0])]
-	for l in 1:maxlevel(N)
-		H = vcat(H, Level(zeros(T,2^(l-1))))
+	H = []
+	for l in 0:maxlevel(N)
+		H = vcat(H, Level(zeros(T, 2^l + 1)))
 	end
-	return HierarchicalBasis(H)
+	return HierarchicalBasis{T}(H)
 end
 
 function H_2_Nodal(H::HierarchicalBasis{T})::NodalBasis{T} where {T}
   	N = zeros(H)
-  	N[0] = H[0,0]
- 	N[end] = H[0,1]
- 	for j in 1:2^l - 1
- 		N[j] = evaluate(H, x(l,j))
+ 	for j in 0:2^maxlevel(H)
+ 		N[j] = evaluate(H, x(maxlevel(H),j))
  	end
  	return N
  end
 
 function Nodal_2_H(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
  	H = zeros(N)
- 	H[0, 0] = N[0]
-    H[0, 1] = N.values[end]
-  	for l in 1:maxlevel(N), j in 1:2:2^l
- 		H[l,j] = N[j] - evaluate(H, x(l,j))
+  	for l in 0:maxlevel(N), j in 0:2^l
+ 		H[l,j] = N[l,j] - evaluate(H, x(l,j))
  	end
  	return H
  end
@@ -158,5 +152,7 @@ function calcNodal(u::Function, x::Array{T,1})::NodalBasis{T} where {T}
  	end
  	return NodalBasis(coefficients)
 end
+
+
 
 
