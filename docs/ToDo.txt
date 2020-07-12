@@ -1,0 +1,41 @@
+Michelle Medina
+
+July 9, 2020
+DONE- Check values on paper 
+DONE- Check index on paper
+- Graph magnitude of coefficients max(abs(value @ level)) vs levels
+- Graph interpolation error
+
+July 8, 2020 
+ALL DONE
+Fix docstring and do it for types
+
+July 7, 2020
+Soham's To Do List - ALL DONE
+HierarchicalBasisTest.jl:3:# TODO: Add test functions here.
+docs/TODO.md:1:# TODO
+src/NodalCoefficients.jl:2:# TODO: Add author info and date
+src/NodalCoefficients.jl:8:    # TODO: Add docstring to the function
+src/NodalCoefficients.jl:13:    # TODO: Return NodalBasis instead of Array{T}
+src/NodalCoefficients.jl:17:# TODO: Remove these from here, and add them to test.
+src/LinearInterpolation.jl:1:# TODO: Add author info and date
+src/LinearInterpolation.jl:2:# TODO: export functions separated by a comma.
+src/LinearInterpolation.jl:3:# TODO: Add test cases in test directory
+src/HierarchicalBasis.jl:1:# TODO: Add author info and date
+src/HierarchicalBasis.jl:2:# TODO: Export functions separated by a comma.
+src/HierarchicalBasis.jl:3:# TODO: Export types on a separate line
+src/HierarchicalBasis.jl:15:    # TODO: Remove very descriptive comments, since they are unnecessary.
+src/HierarchicalBasis.jl:37:# TODO: Move type definitions to the top
+src/HierarchicalBasis.jl:63:    # TODO: Fix the spelling of indices
+src/HierarchicalBasis.jl:64:    # TODO: Move all function comments inside a docstring
+src/HierarchicalBasis.jl:108:# TODO: Fix comment descriptions; also move them to a docstring
+src/HierarchicalBasis.jl:147:# TODO: Move these to a Test file in the test directory.
+
+June 29, 2020
+sin(x) discretize it to levels
+calculate coefficients
+see how coefficients fall off
+
+
+
+
