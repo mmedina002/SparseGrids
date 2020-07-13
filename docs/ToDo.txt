@@ -1,10 +1,40 @@
 Michelle Medina
 
+July 13, 2020
+- Bilinear Interpolation // DONE
+- 2D Nodal Code
+
 July 9, 2020
-DONE- Check values on paper 
-DONE- Check index on paper
+ALL DONE
+- Check values on paper 
+- Check index on paper
 - Graph magnitude of coefficients max(abs(value @ level)) vs levels
-- Graph interpolation error
+- Graph interpolation error: 
+
+9 points --> exp(x) [Nodal Basis] --> Hierarchical basis (level 3)
+100 points between [0, 1]
+y_analytic = exp(x) where x has 100 points
+y_numeric_upto_level_l = evaluate(HierarchichalBasis(up to level l)) on these 100 points
+error_upto_level_l = y_numeric_upto_level_l - y_analytic
+plot(upto_level_l, error_upto_level_l)
+
+Level 0
+      evaluate upto level 0
+Level 1
+      evaluate upto level 0 and 1
+Level 2
+      evaluate upto level 0, 1 and 2. <--- evaluate(HB, x)
+
+
+function evaluate(HB::HierarchicalBasis, level::Int, x::Float64)::Float64
+    for level in 0:level, ...
+
+    end
+    return
+end
+
+x = collect(range(0, stop=1, length=100))
+y_numeric_upto_l = evaluate.(HB, l, x)
 
 July 8, 2020 
 ALL DONE
