@@ -75,9 +75,10 @@ function Base.getindex(N::NodalBasis{T}, l::Int, j::Int)::T where {T}
 	return N.values[J+1]
 end
 
-function Base.lastindex(N::NodalBasis{T})::Int where {T}
-	return length(N.values) - 1
-end
+
+# function Base.abs(H::HierarchicalBasis{T})::T where {T}
+# 	return abs.(H.levels.coefficients)
+# end
 
 #************ BASIS TRANSFORMATIONS ******************************** 
 
@@ -144,14 +145,6 @@ function Nodal_2_H(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
  	end
  	return H
  end
-
-function calcNodal(u::Function, x::Array{T,1})::NodalBasis{T} where {T}
-	coefficients = zeros(length(x))
- 	for index in CartesianIndices(x)
- 		coefficients[index] = u(x[index])
- 	end
- 	return NodalBasis(coefficients)
-end
 
 
 
