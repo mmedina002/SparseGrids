@@ -11,3 +11,7 @@ u=sin.(x)
 @test find_interval(x,3.5)==3
 
 @test interpolate(x,u,1.5)==0.8753842058167891
+
+interpolateX(0.0, 1.0, 0.0, 1.0, 2.0, 3.0, 0.5)
+
+interpolateY(0.0, 1.0, 1.0, 2.0, 0.5)

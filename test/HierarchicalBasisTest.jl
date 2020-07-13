@@ -72,42 +72,27 @@
 # error_upto_level_l = y_numeric_upto_level_l - y_analytic
 # plot(upto_level_l, error_upto_level_l)
 
-xVal = collect(range(0.0, stop=1.0, length = 9))
-nodal = calcNodal(x -> exp(x), xVal)
-newValues = Nodal_2_H(nodal)
+xValue = collect(range(0.0, stop=1.0, length = 1025))
+nodalTest = calcNodal(x -> exp(x), xValue)
+newVal = Nodal_2_H(nodalTest)
 
-function evaluate_upto(H::HierarchicalBasis{T}, level::Int, x::Float64)::T where {T} 
-	value = T(0)
-	for l in 0:level
-	for j in 0:2^l
-		value = value + H[l, j]*basis(l, j, x)
-	end
-	end
-	return value
+
+using LinearAlgebra
+xNew = collect(range(0.0, stop=1.0, length = 2000))
+y2 = exp.(xNew)
+E = []
+for l in 0:10
+	y1 = evaluate_upto(newVal, l, xNew)
+	error_upto_level_l = norm(y1 - y2)
+	append!(E, error_upto_level_l)
 end
 
-# l0 = 0
-# y_numeric_upto_0 = evaluate_upto(newValues, l0, 0.5)
-
-y_numeric_upto_l = []
-y_analytic = []
-for x in 0.0:0.01:1.0
-	l = 3
-	y1 = evaluate_upto(newValues, l, x)
-	y2 = exp.(x)
-	append!(y_numeric_upto_l, y1)
-	append!(y_analytic, y2)
-end
-return y_numeric_upto_l
-return y_analytic
-
-
-error_upto_level_l = y_numeric_upto_l - y_analytic
-l = 3
-upto_level = collect(range(0, stop = l, length = l))
 
 using PyPlot
-plot(error_upto_level_l)
+semilogy(E)
+xlabel("Levels")
+ylabel("Interpolation Error")
+title("Interpolation Error vs Levels")
 show()
 
 
