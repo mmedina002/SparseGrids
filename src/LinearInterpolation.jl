@@ -2,7 +2,15 @@
 # June 18, 2020
 # Code that does linear interpolation of a function
 
-export line, find_interval, interpolate
+export line, find_interval, interpolate, interp
+
+function interp(p1::NTuple{2,T}, p2::NTuple{2,T}, xeval::T)::T where {T}
+	x1, y1 = p1
+	x2, y2 = p2
+	y = y1 + (xeval - x1)*((y2 - y1)/(x2 - x1))
+    return y
+end
+
 
 function line(x1::T,y1::T,x2::T,y2::T,xeval::T)::T where T
     m = (y1-y2)/(x1-x2)
