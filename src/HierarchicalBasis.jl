@@ -2,7 +2,7 @@
 # July 7, 2020
 # Functions for Hierarchical Bases
 
-export basis, maxlevel, evaluate, H_2_Nodal, Nodal_2_H, calcNodal
+export basis, maxlevel, evaluate, H_2_Nodal, Nodal_2_H, calcNodal, Nodal_2_H_new
 export Level, HierarchicalBasis, NodalBasis
 
 #************ TYPES ******************************** 
@@ -141,11 +141,20 @@ function H_2_Nodal(H::HierarchicalBasis{T})::NodalBasis{T} where {T}
 function Nodal_2_H(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
  	H = zeros(N)
   	for l in 0:maxlevel(N), j in 0:2^l
- 		H[l,j] = N[l,j] - evaluate(H, x(l,j))
+ 		H[l,j] = N[l,j] - evaluate(H, x(l,j)) 
  	end
  	return H
  end
-
-
+ 
+ function Nodal_2_H_new(N::NodalBasis{T})::HierarchicalBasis{T} where {T}
+ 	 H = zeros(N)
+ 	 H[0,0] = N[0,0]
+ 	 H[0,1] = N[0,1]
+ 	 for l in 1:maxlevel(N), j in 1:2^l-1
+ 		 H[l,j] = N[l,j] - interp((x(l, j-1), N[l, j-1]), (x(l, j+1), N[l, j+1]), x(l,j))
+ 	 end
+ 	 return H
+ end
+		 
 
 
