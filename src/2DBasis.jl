@@ -2,24 +2,7 @@
 # July 8, 2020
 # 2D code for Nodal Basis
 
-export NodalBasis2D, Level2D, HierarchicalBasis2D
 export maxlevel, getindex, calcNodal2D, basis, x, evaluate, H_2_Nodal, Nodal_2_H_new, Nodal_2_H_sparse
-
-#********** TYPES **********
-"""
-A 2D nodal basis needs the value of the function at two point
-"""
-struct NodalBasis2D{T}
-	values::Array{T,2} 
-end
-
-struct Level2D{T}
-	coefficients::Array{T,2}  
-end
-
-struct HierarchicalBasis2D{T}
-	levels::Array{Level2D{T},2}  
-end
 
 
 #********** INDEX **********

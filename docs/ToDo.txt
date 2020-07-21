@@ -12,7 +12,7 @@ July 21, 2020 [Clean-up]
 
 July 13, 2020
 - Bilinear Interpolation // DONE
-- 2D Nodal Code
+- 2D Nodal Code // DONE
 
 July 9, 2020
 ALL DONE

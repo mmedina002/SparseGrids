@@ -2,30 +2,23 @@
 # July 16, 2020
 # Testing 2D cases for Nodal and Hierarchical Bases
 
+# Testing calculating Nodal Basis function in 2D
 xVal = collect(range(0.0, stop=1.0, length = 5))
 yVal = collect(range(0.0, stop=1.0, length = 5))
 nodal = calcNodal2D((x,y)->exp(x)*exp(y), xVal, yVal)
-# @show nodal
-#
-# using PyPlot
-# # contourf(nodal.values)
-# # colorbar()
-# # show()
-#
-# #TODO PLOT ONE MORE FUNCTION exp(x)*sin(y)
-# nodal2 = calcNodal2D((x,y)->exp(x)*sin(pi*y), xVal, yVal)
-# contourf(nodal2.values)
-# colorbar()
-# show()
+nodal2 = calcNodal2D((x,y)->exp(x)*sin(pi*y), xVal, yVal)
 
-# Level0 = Level2D(rand(2,2))
-# Level1 = Level2D(rand(3,3))
-# H = HierarchicalBasis2D([Level0, Level1])
-# values = evaluate(H, .3, .5)
-# nodalTest = H_2_Nodal(H)
-# modalTest = Nodal_2_H(nodalTest)
-#
-#
+# Plotting 2D functions
+using PyPlot
+contourf(nodal.values)
+colorbar()
+show()
+
+contourf(nodal2.values)
+colorbar()
+show()
+
+# Going from nodal to hierarchical grid and sparse grid
 modal = Nodal_2_H(nodal)
 sparse = Nodal_2_H_sparse(nodal,3)
 for l in 0:2, m in 0:2
@@ -34,22 +27,24 @@ for l in 0:2, m in 0:2
 	println()
 end
 
-# back = H_2_Nodal(modal)
+# Going back and forth between nodal and modal
+back = H_2_Nodal(modal)
+@show back
+@show isapprox(nodal.values,back.values)
 
-# modal2 = Nodal_2_H_new(nodal)
+# Using interpolation instead of evaluate
+modal2 = Nodal_2_H_new(nodal)
 
-# @show back
-# @show isapprox(nodal.values,back.values)
+# Testing how coefficients fall off as level increases
+using LinearAlgebra
+A = []
+for l in 0:maxlevel(modal,1)
+	append!(A, norm(modal.levels[l+1].coefficients))
+end
 
-# using LinearAlgebra
-# A = []
-# for l in 0:maxlevel(modal,1)
-# 	append!(A, norm(modal.levels[l+1].coefficients))
-# end
-#
-# using PyPlot
-# plot(A)
-# show()
+using PyPlot
+plot(A)
+show()
 
 
 	

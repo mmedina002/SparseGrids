@@ -8,4 +8,5 @@ include("HierarchicalBasis.jl")
 include("Utilities.jl")
 include("LinearInterpolation_2D.jl")
 include("2DBasis.jl")
+include("Types.jl")
 end # module

@@ -3,29 +3,7 @@
 # Functions for Hierarchical Bases
 
 export basis, maxlevel, evaluate, H_2_Nodal, Nodal_2_H, calcNodal, Nodal_2_H_new
-export Level, HierarchicalBasis, NodalBasis
 
-#************ TYPES ******************************** 
-"""
-For each level, the coefficients that make it up
-"""
-struct Level{T}
-	coefficients::Array{T,1}  
-end
-
-"""
-All of the levels that make up one basis
-"""
-struct HierarchicalBasis{T}
-	levels::Array{Level{T},1}  
-end
-
-"""
-A nodal basis just needs the value of the function at a point
-"""
-struct NodalBasis{T}
-	values::Array{T,1} 
-end
 
 #************  INDEX  ******************************** 
 """
