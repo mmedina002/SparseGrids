@@ -3,7 +3,7 @@
 # 2D code for Nodal Basis
 
 export NodalBasis2D, Level2D, HierarchicalBasis2D
-export maxlevel, getindex, calcNodal2D, basis, x, evaluate, H_2_Nodal, Nodal_2_H_new
+export maxlevel, getindex, calcNodal2D, basis, x, evaluate, H_2_Nodal, Nodal_2_H_new, Nodal_2_H_sparse
 
 #********** TYPES **********
 """
@@ -18,7 +18,7 @@ struct Level2D{T}
 end
 
 struct HierarchicalBasis2D{T}
-	levels::Array{Level2D{T},1}  
+	levels::Array{Level2D{T},2}  
 end
 
 
@@ -36,36 +36,39 @@ end
 
 function Base.getindex(N::NodalBasis2D{T}, i::Int, j::Int)::T where {T}
 	@assert 0 <= i <= (2^maxlevel(N, 1))
-	@assert 0 <= j <= (2^maxlevel(N, 1)) 
+	@assert 0 <= j <= (2^maxlevel(N, 2)) 
 	return N.values[i+1, j+1]
 end
 
-function Base.getindex(H::HierarchicalBasis2D{T}, l::Int, i::Int, j::Int)::T where {T}
+function Base.getindex(H::HierarchicalBasis2D{T}, l::Int, m::Int, i::Int, j::Int)::T where {T}
 	@assert 0 <= l <= maxlevel(H, 1)
+	@assert 0 <= m <= maxlevel(H, 2)
 	@assert 0 <= i <= (2^l)
-	@assert 0 <= j <= (2^l)
-	return H.levels[l+1].coefficients[i+1, j+1]
+	@assert 0 <= j <= (2^m)
+	return H.levels[l+1, m+1].coefficients[i+1, j+1]
 end
 
 function Base.setindex!(N::NodalBasis2D{T}, X::T, i::Int, j::Int)::T where {T}
 	@assert 0 <= i <= (2^maxlevel(N, 1))
-	@assert 0 <= j <= (2^maxlevel(N, 1))
+	@assert 0 <= j <= (2^maxlevel(N, 2))
 	N.values[i+1, j+1] = X
 end
 
-function Base.setindex!(H::HierarchicalBasis2D{T}, X::T, l::Int, i::Int, j::Int)::T where {T}
+function Base.setindex!(H::HierarchicalBasis2D{T}, X::T, l::Int, m::Int, i::Int, j::Int)::T where {T}
 	@assert 0 <= l <= maxlevel(H, 1)
+	@assert 0 <= m <= maxlevel(H, 2)
 	@assert 0 <= i <= (2^l)
-	@assert 0 <= j <= (2^l)
-	H.levels[l+1].coefficients[i+1, j+1] = X
+	@assert 0 <= j <= (2^m)
+	H.levels[l+1, m+1].coefficients[i+1, j+1] = X
 end
 
-function Base.getindex(N::NodalBasis2D{T}, l::Int, i::Int, j::Int)::T where {T}
+function Base.getindex(N::NodalBasis2D{T}, l::Int, m::Int, i::Int, j::Int)::T where {T}
 	@assert 0 <= l <= maxlevel(N, 1)
+	@assert 0 <= m <= maxlevel(N, 2)
 	@assert 0 <= i <= (2^maxlevel(N, 1))
-	@assert 0 <= j <= (2^maxlevel(N, 1))
+	@assert 0 <= j <= (2^maxlevel(N, 2))
 	I = 2^(maxlevel(N, 1)-l)*i 
-	J = 2^(maxlevel(N, 1)-l)*j
+	J = 2^(maxlevel(N, 2)-m)*j
 	return N.values[I+1, J+1]
 end
 
@@ -78,81 +81,87 @@ function calcNodal2D(u::Function, x::Array{T,1}, y::Array{T,1})::NodalBasis2D{T}
  	return NodalBasis2D(coefficients)
 end
 
-function basis(l::Int, i::Int, j::Int, x::T, y::T)::T where {T}
-	return basis(l, i, x)*basis(l, j, y)
+function basis(l::Int, m::Int, i::Int, j::Int, x::T, y::T)::T where {T}
+	return basis(l, i, x)*basis(m, j, y)
 end
 
-function x(l::Int, i::Int, j::Int)::NTuple{2,Float64}
-	return (x(l,i), x(l,j))
+function x(l::Int, m::Int, i::Int, j::Int)::NTuple{2,Float64}
+	return (x(l,i), x(m,j))
 end
 
 function evaluate(H::HierarchicalBasis2D{T}, x::T, y::T)::T where {T} 
 	value = T(0)
-	for l in 0:maxlevel(H,1)
-		for i in 0:2^l
-			for j in 0:2^l
-			value = value + H[l, i, j]*basis(l, i, j, x, y)
-		end
+	for l in 0:maxlevel(H,1), m in 0:maxlevel(H,2)
+		for i in 0:2^l, j in 0:2^m
+			value = value + H[l, m, i, j]*basis(l, m, i, j, x, y)
 		end
 	end
 	return value
 end
 
 function Base.zeros(H::HierarchicalBasis2D{T})::NodalBasis2D{T} where {T}
-	return NodalBasis2D(zeros(T, (2^maxlevel(H,1) + 1, 2^maxlevel(H,1) + 1)))
+	return NodalBasis2D(zeros(T, (2^maxlevel(H,1) + 1, 2^maxlevel(H,2) + 1)))
 end
 
 
 function Base.zeros(N::NodalBasis2D{T})::HierarchicalBasis2D{T} where {T}
-	H = []
-	for l in 0:maxlevel(N,1)
-		H = vcat(H, Level2D(zeros(T, (2^l + 1, 2^l + 1))))
+	H = Array{Any, 2}(missing, maxlevel(N,1) + 1, maxlevel(N,2) + 1)
+	for l in 0:maxlevel(N,1), m in 0:maxlevel(N,2)
+		H[l+1,m+1] = zeros(T, (2^l + 1, 2^m + 1))
 	end
-	return HierarchicalBasis2D{T}(H)
+	return HierarchicalBasis2D{T}(Level2D.(H))
 end
 
 function H_2_Nodal(H::HierarchicalBasis2D{T})::NodalBasis2D{T} where {T}
   	N = zeros(H)
  	for i in 0:2^maxlevel(H, 1)
-		for j in 0:2^maxlevel(H, 1)
- 		N[i,j] = evaluate(H, x(maxlevel(H, 1), i, j)...)
+		for j in 0:2^maxlevel(H, 2)
+ 			N[i,j] = evaluate(H, x(maxlevel(H, 1), maxlevel(H,2), i, j)...)
 		end
  	end
  	return N
- end
+end
  
- function Nodal_2_H(N::NodalBasis2D{T})::HierarchicalBasis2D{T} where {T}
-  	H = zeros(N)
-   	for l in 0:maxlevel(N, 1), i in 0:2^l, j in 0:2^l
-  		H[l, i, j] = N[l, i, j] - evaluate(H, x(l,i,j)...) 
+function Nodal_2_H(N::NodalBasis2D{T})::HierarchicalBasis2D{T} where {T}
+ 	H = zeros(N)
+ 	for l in 0:maxlevel(N, 1), m in 0:maxlevel(N,2)
+		for i in 0:2^l, j in 0:2^m
+  			H[l, m, i, j] = N[l, m, i, j] - evaluate(H, x(l,m,i,j)...) 
+		end
   	end
   	return H
-  end
+end
+
+function Nodal_2_H_sparse(N::NodalBasis2D{T}, s::Int)::HierarchicalBasis2D{T} where {T}
+ 	H = zeros(N)
+ 	for l in 0:maxlevel(N, 1), m in 0:maxlevel(N,2)
+		for i in 0:2^l, j in 0:2^m
+			if l+m <= s
+  				H[l, m, i, j] = N[l, m, i, j] - evaluate(H, x(l,m,i,j)...) 
+			end
+		end
+  	end
+  	return H
+end
 
  function Nodal_2_H_new(N::NodalBasis2D{T})::HierarchicalBasis2D{T} where {T}
  	 H = zeros(N)
  	 H[0,0,0] = N[0,0,0]
  	 H[0,0,1] = N[0,0,1]
-	 H[0,1,0] = N[0,1,0]
-	 H[0,1,1] = N[0,1,1]
+ 	 H[0,1,0] = N[0,1,0]
+ 	 H[0,1,1] = N[0,1,1]
  	 for l in 1:maxlevel(N, 1), i in 1:2^l-1, j in 1:2^l-1
-		 H[l,i,j] = N[l,i,j] - interpolate((x(l, i-1, j)..., N[l, i-1, j]), (x(l, i-1, j-1)...,N[l, i-1, j-1]), (x(l, i, j+1)...,N[l, i, j+1]), (x(l, i+1, j+1)...,N[l, i-+, j+1]), x(l,i,j))
+		 p1 = (x(l, m, i-1, j)..., N[l, m, i-1, j])
+		 p2 = (x(l, i-1, j-1)...,N[l, i-1, j-1])
+		 p3 = (x(l, i, j+1)...,N[l, i, j+1])
+		 p4 = (x(l, i+1, j+1)...,N[l, i-+, j+1])
+		 p5 = x(l,i,j)...
+ 		 H[l,i,j] = N[l,i,j] - interpolate(p1, p2, p3, p4, p5)
  	 end
  	 return H
  end
 
- # I want to use this for my nodal to modal
- function interpolate(p1::NTuple{3,T}, p2::NTuple{3,T}, p3::NTuple{3,T}, p4::NTuple{3,T}, p5::NTuple{2,T})::T where {T}
- 	x1, y1, F11 = p1 
- 	x1, y2, F12 = p2
- 	x2, y1, F21 = p3
- 	x2, y2, F22 = p4
- 	xeval, yeval = p5
- 	dx = x2 - x1
- 	dy = y2 - y1
- 	Fxy = ((y2 - yeval)/dy)*(((x2 - xeval)/dx)*F11 + ((xeval - x1)/dx)*F21) + ((yeval - y1)/dy)*(((x2 - xeval)/dx)*F12 + ((xeval - x1)/dx)*F22)
- 	return Fxy
- end
+
 
 
 
