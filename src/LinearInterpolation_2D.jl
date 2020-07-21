@@ -1,6 +1,6 @@
 # Michelle Medina
 # July 9, 2020
-# Bilinear Interpolation
+# Bilinear Interpolation Code
 
 export interpolateX_y1, interpolateX_y2, interpolateY, find_interval_x, find_interval_y, interpolate
 
