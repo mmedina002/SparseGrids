@@ -1,5 +1,15 @@
 Michelle Medina
 
+July 21, 2020 [Clean-up]
+- Remove 2DNodal.jl. It's a duplicate.
+- Remove sineHB.jl. You don't use it.  
+- Merge LinearInterpolation and LinearInterpolation_2D into one file, called Interpolation.jl 
+- Remove unnecessary functions from Interpolation.jl 
+- Remove NodalCoefficents.jl. It's a duplicate.
+- Move all the types to a new file called Types.jl
+- Fix the test cases in HierarchicalBases and 2D_BasisTest. Uncomment the tests
+- Think of a more consistent naming scheme for 1D and 2D files. 
+
 July 13, 2020
 - Bilinear Interpolation // DONE
 - 2D Nodal Code
