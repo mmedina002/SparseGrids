@@ -3,10 +3,9 @@
 
 module SparseGrids
 
-include("LinearInterpolation.jl")
+include("Interpolation.jl")
 include("HierarchicalBasis.jl")
 include("Utilities.jl")
-include("LinearInterpolation_2D.jl")
 include("2DBasis.jl")
 include("Types.jl")
 end # module

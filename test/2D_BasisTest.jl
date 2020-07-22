@@ -29,8 +29,7 @@ end
 
 # Going back and forth between nodal and modal
 back = H_2_Nodal(modal)
-@show back
-@show isapprox(nodal.values,back.values)
+@test isapprox(nodal.values,back.values)
 
 # Using interpolation instead of evaluate
 modal2 = Nodal_2_H_new(nodal)
