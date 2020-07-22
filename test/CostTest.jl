@@ -6,11 +6,22 @@
 
 # ---------------------------------------------------------
 # We start with a 2D function f
+l = 10
+xVal = collect(range(0.0, stop=1.0, length = 2^l+1))
+yVal = collect(range(0.0, stop=1.0, length = 2^l+1))
+nodalf = calcNodal2D((x,y)->exp(x)*exp(y), xVal, yVal)
+modalf = Nodal_2_H(nodalf)
+modalf_sparse = Nodal_2_H_sparse(nodalf,l)
 # nodalf = caclNodal(f, 2^10 + 1) level = 10
 # modalf = Nodal_2_H(nodalf)
 # modalf_sparse = Nodal_2_H_sparse(nodalf)
 
 # Compute the interpolation error
+xNew = collect(range(0.0, stop=1.0, length = 1000))
+yNew = collect(range(0.0, stop=1.0, length = 1000))
+f_analytic = calcNodal2D((x,y)->exp(x)*exp(y), xNew, yNew)
+f_nodal_from_modalf = calcNodal2D((x,y)->evaluate(umodal_full, x, y), xNew, yNew)
+f_nodal_from_modalf_sparse = calcNodal2D((x,y)->evaluate(umodal_sparse, x, y), xNew, yNew)
 # f_analytic (you evaluate a function with 1000 x 1000) points. 
 # f_nodal_from_modalf (evaluate at the same 1000 x 1000 points)
 # f_nodal_from_modalf_sparse (evaluate at the same 1000 x 1000 points)
