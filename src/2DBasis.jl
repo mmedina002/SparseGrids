@@ -127,22 +127,22 @@ function Nodal_2_H_sparse(N::NodalBasis2D{T}, s::Int)::HierarchicalBasis2D{T} wh
   	return H
 end
 
- function Nodal_2_H_new(N::NodalBasis2D{T})::HierarchicalBasis2D{T} where {T}
- 	 H = zeros(N)
- 	 H[0,0,0] = N[0,0,0]
- 	 H[0,0,1] = N[0,0,1]
- 	 H[0,1,0] = N[0,1,0]
- 	 H[0,1,1] = N[0,1,1]
- 	 for l in 1:maxlevel(N, 1), i in 1:2^l-1, j in 1:2^l-1
-		 p1 = (x(l, m, i-1, j)..., N[l, m, i-1, j])
-		 p2 = (x(l, i-1, j-1)...,N[l, i-1, j-1])
-		 p3 = (x(l, i, j+1)...,N[l, i, j+1])
-		 p4 = (x(l, i+1, j+1)...,N[l, i-+, j+1])
-		 p5 = x(l,i,j)...
- 		 H[l,i,j] = N[l,i,j] - interpolate(p1, p2, p3, p4, p5)
- 	 end
- 	 return H
- end
+ # function Nodal_2_H_new(N::NodalBasis2D{T})::HierarchicalBasis2D{T} where {T}
+ # 	 H = zeros(N)
+ # 	 H[0,0,0] = N[0,0,0]
+ # 	 H[0,0,1] = N[0,0,1]
+ # 	 H[0,1,0] = N[0,1,0]
+ # 	 H[0,1,1] = N[0,1,1]
+ # 	 for l in 1:maxlevel(N, 1), i in 1:2^l-1, j in 1:2^l-1
+ # 		 p1 = (x(l, m, i-1, j)..., N[l, m, i-1, j])
+ # 		 p2 = (x(l, i-1, j-1)...,N[l, i-1, j-1])
+ # 		 p3 = (x(l, i, j+1)...,N[l, i, j+1])
+ # 		 p4 = (x(l, i+1, j+1)...,N[l, i-+, j+1])
+ # 		 p5 = x(l,i,j)...
+ # 		 H[l,i,j] = N[l,i,j] - interpolate(p1, p2, p3, p4, p5)
+ # 	 end
+ # 	 return H
+ # end
 
 
 

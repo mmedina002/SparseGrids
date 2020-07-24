@@ -4,7 +4,6 @@
 
 export basis, maxlevel, evaluate, H_2_Nodal, Nodal_2_H, calcNodal, Nodal_2_H_new
 
-
 #************  INDEX  ******************************** 
 """
 Function gives the highest level (l-1 because we are considering level 0) 
