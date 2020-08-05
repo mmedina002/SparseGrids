@@ -5,6 +5,7 @@
 
 export cost1D, cost2D, cost3D, cost7D
 
+using PyPlot
 # ---------------------------------------------------------
 function Base.:-(u::NodalBasis2D{T}, w::NodalBasis2D{T})::NodalBasis2D{T} where {T}
 	value = NodalBasis2D(u.values - w.values)
@@ -56,57 +57,71 @@ function cost7D(level::Int)::NTuple{2,Float64}
     sparse = 0.0
     for l in 0:level, m in 0:level, n in 0:level, o in 0:level, p in 0:level, q in 0:level, r in 0:level
         full = full + 1.0 * cost1D(l)*cost1D(m)*cost1D(n)*cost1D(o)*cost1D(p)*cost1D(q)*cost1D(r)
-        if l + m + n + o + p + q + r <= level + 6
+        if l + m + n + o + p + q + r <= level 
             sparse = sparse + 1.0 * cost1D(l)*cost1D(m)*cost1D(n)*cost1D(o)*cost1D(p)*cost1D(q)*cost1D(r)
         end
     end
     return (full, sparse)
 end
 
-# Cost (number of total points) vs. accurary (interpolation error)
-# for both full basis and sparse basis
+#Cost (number of total points) vs. accurary (interpolation error)
+#for both full basis and sparse basis
 error_full = []
 error_sparse = []
 cost_full = []
 cost_sparse = []
 
-level = 7
+level = 3
 for l in 0:level
-	# We start with a 2D function f
-	N = 2^l+1
-	@show l
-	xVal = collect(range(0.0, stop=1.0, length = 2^l+1))
-	yVal = collect(range(0.0, stop=1.0, length = 2^l+1))
+	N = 2^l + 1
+
+	xVal = collect(range(0.0, stop=1.0, length = N))
+	yVal = collect(range(0.0, stop=1.0, length = N))
 	nodalf = calcNodal2D((x,y)->exp(x)*exp(y), xVal, yVal)
 	modalf = Nodal_2_H(nodalf)
 	modalf_sparse = Nodal_2_H_sparse(nodalf,l)
 	costF, costS = cost2D(l)
 
 	# Compute the interpolation error
-	le = 10 * (2^l+1) # FIX THIS
+	le = 10 * (2^l+1) 
 	xNew = collect(range(0.0, stop=1.0, length = le))
 	yNew = collect(range(0.0, stop=1.0, length = le))
+	xNew = xNew[2:end-1]
+	yNew = yNew[2:end-1]
 	f_analytic = calcNodal2D((x,y)->exp(x)*exp(y), xNew, yNew)
 	f_nodal_from_modalf = calcNodal2D((x,y)->evaluate(modalf, x, y), xNew, yNew)
 	f_nodal_from_modalf_sparse = calcNodal2D((x,y)->evaluate(modalf_sparse, x, y), xNew, yNew)
 
-	error_f = norm(f_analytic - f_nodal_from_modalf)
-	error_s = norm(f_analytic - f_nodal_from_modalf_sparse)
+	error_f = sum(abs.((f_analytic - f_nodal_from_modalf).values))
+	error_s = sum(abs.((f_analytic - f_nodal_from_modalf_sparse).values))
 
 	append!(error_full, error_f)
 	append!(error_sparse, error_s)
 	append!(cost_full, costF)
 	append!(cost_sparse, costS)
-
+	
+	# if l == 4
+	# 	fig = figure()
+	# 	subplot(1,2,1)
+	# 	contourf((f_analytic - f_nodal_from_modalf).values)
+	# 	colorbar()
+	#
+	# 	subplot(1,2,2)
+	# 	contourf((f_analytic - f_nodal_from_modalf_sparse).values)
+	# 	colorbar()
+	# 	show()
+	# end
+	#
+	#
 end
 
-using PyPlot
-plot(error_full, cost_full, "g-o", label = "Full")
-plot(error_sparse, cost_sparse, "b-o", label = "Sparse")
-title("Cost vs Accuracy")
+
+loglog(error_full, cost_full, "g-o", label = "Full")
+loglog(error_sparse, cost_sparse, "b-o", label = "Sparse")
+title("Cost vs Interpolation Error")
 legend()
-xlabel("Accuracy")
 ylabel("Cost")
+xlabel("Interpolation Error")
 show()
 
 # for l in 0:10
@@ -130,7 +145,7 @@ show()
 #
 # # use heat map
 # using PyPlot
-# imshow(A, cmap = "Purples_r")
+# imshow(A, vmin=0, vmax=0.5)
 # title("f(x,y) = sin(pi*x)*sin(pi*y) + cos(pi*x)*cos(pi*y)")
 # colorbar()
 # show()

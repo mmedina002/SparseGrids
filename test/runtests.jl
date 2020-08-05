@@ -3,7 +3,8 @@ using SparseGrids, Test
 # include("HierarchicalBasisTest.jl")
 # include("InterpolationTest.jl")
 # include("2D_BasisTest.jl")
-include("CostTest.jl")
+# include("CostTest.jl")
+include("DerivsTest.jl")
 
 
 
