@@ -84,21 +84,26 @@ for l in 0:level
 
 	# Compute the interpolation error
 	le = 10 * (2^l+1) 
-	xNew = collect(range(0.0, stop=1.0, length = le))
-	yNew = collect(range(0.0, stop=1.0, length = le))
-	xNew = xNew[2:end-1]
-	yNew = yNew[2:end-1]
+	h = 1/le
+	xNew = collect(range(0.0 + h/2, stop=1.0 - h/2, length = le))
+	yNew = collect(range(0.0 + h/2, stop=1.0 - h/2, length = le))
+	# xNew = xNew[2:end-1]
+	# yNew = yNew[2:end-1]
 	f_analytic = calcNodal2D((x,y)->exp(x)*exp(y), xNew, yNew)
 	f_nodal_from_modalf = calcNodal2D((x,y)->evaluate(modalf, x, y), xNew, yNew)
 	f_nodal_from_modalf_sparse = calcNodal2D((x,y)->evaluate(modalf_sparse, x, y), xNew, yNew)
 
-	error_f = sum(abs.((f_analytic - f_nodal_from_modalf).values))
-	error_s = sum(abs.((f_analytic - f_nodal_from_modalf_sparse).values))
+	# error_f = sum(abs.((f_analytic - f_nodal_from_modalf).values))
+	# error_s = sum(abs.((f_analytic - f_nodal_from_modalf_sparse).values))
+	error_f = sqrt(sum((f_analytic.values - f_nodal_from_modalf.values).^2)/length(f_analytic.values))
+	error_s = sqrt(sum((f_analytic.values - f_nodal_from_modalf_sparse.values).^2)/length(f_analytic.values))
 
 	append!(error_full, error_f)
 	append!(error_sparse, error_s)
 	append!(cost_full, costF)
 	append!(cost_sparse, costS)
+	
+	@show error_f, error_s, cost_full, cost_sparse
 	
 	# if l == 4
 	# 	fig = figure()
@@ -116,13 +121,13 @@ for l in 0:level
 end
 
 
-loglog(error_full, cost_full, "g-o", label = "Full")
-loglog(error_sparse, cost_sparse, "b-o", label = "Sparse")
-title("Cost vs Interpolation Error")
-legend()
-ylabel("Cost")
-xlabel("Interpolation Error")
-show()
+# loglog(error_full, cost_full, "g-o", label = "Full")
+# loglog(error_sparse, cost_sparse, "b-o", label = "Sparse")
+# title("Cost vs Interpolation Error")
+# legend()
+# ylabel("Cost")
+# xlabel("Interpolation Error")
+# show()
 
 # for l in 0:10
 # 	@show l cost7D(l)
