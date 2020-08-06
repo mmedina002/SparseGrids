@@ -5,14 +5,24 @@ using PyPlot
 
 x = collect(range(0, stop=1, length = 10001))
 
-plot(x, derivBasis.(1, 1, x))
-plot(x, derivBasis.(2, 1, x), "g")
-# plot(x, basis.(2, 3, x), "g")
-# plot(x, basis.(3, 1, x), "m")
-# plot(x, basis.(3, 3, x), "m")
-# plot(x, basis.(3, 5, x), "m")
-# plot(x, basis.(3, 7, x), "m")
+# plot(x, basis.(0, 0, x), "m")
+# plot(x, derivBasis.(0, 0, x))
+# xlabel("x")
+# ylabel("phi(x)")
+# show()
 
-xlabel("x")
-ylabel("phi(x)")
+xVal = collect(range(0.0, stop=1.0, length = 129))
+y = calcNodal(x -> x, xVal)
+modal = Nodal_2_H(y)
+
+dy = zeros(length(xVal))
+for index in CartesianIndices(xVal)
+	dy[index] = derivEvaluate(modal, xVal[index])
+end
+
+plot(xVal,y.values)
+plot(xVal,dy, "g .")
+# plot(xVal, 1)
 show()
+
+# use f(x) = x
