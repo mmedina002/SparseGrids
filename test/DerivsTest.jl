@@ -35,36 +35,33 @@ end
 # plot(xVal,dy, "g .")
 # plot(xVal, cosx.values, "r")
 #
-error = cosx.values - dy
-@show error
-plot(xVal, error)
-show()
 
-# error = []
-#
-# level = 4
-# for l in 0:level
-# 	N = 2^l + 1
-#
-# 	xVal = collect(range(0.0, stop=1.0, length = N))
-#
-# 	# Compute the interpolation error
-# 	le = 10 * (2^l+1)
-# 	h = 1/le
-# 	xNew = collect(range(0.0 + h/2, stop=1.0 - h/2, length = le))
-# 	y = calcNodal(x -> sin(4*pi*x), xVal)
-# 	cosx = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
-# 	modal = Nodal_2_H(y)
-# 	f_analytic = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
-#
-# 	dy = zeros(length(xVal))
-# 	for index in CartesianIndices(xVal)
-# 		dy[index] = derivEvaluate(modal, xVal[index])
-# 	end
-#
-# 	error_up_to = sqrt(sum((f_analytic.values - dy).^2)/length(f_analytic.values))
-#
-# 	append!(error, error_up_to)
-#
-# 	@show error
-# end
+error = []
+
+level = 4
+for l in 0:level
+	N = 2^l + 1
+
+	xVal = collect(range(0.0, stop=1.0, length = N))
+	cosx = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
+	modal_analytic = Nodal_2_H(cosx)
+
+	# Compute the interpolation error
+	le = 10 * (2^l+1)
+	h = 1/le
+	xNew = collect(range(0.0 + h/2, stop=1.0 - h/2, length = le))
+	y = calcNodal(x -> sin(4*pi*x), xNew)
+	modal = Nodal_2_H(y)
+	f_analytic = calcNodal(x -> 4*pi*cos(4*pi*x), xNew)
+
+	dy = zeros(length(xVal))
+	for index in CartesianIndices(xNew)
+		dy[index] = derivEvaluate(modal, xNew[index])
+	end
+
+	error_up_to = sqrt(sum((f_analytic.values - dy).^2)/length(f_analytic.values))
+
+	append!(error, error_up_to)
+
+	@show error
+end
