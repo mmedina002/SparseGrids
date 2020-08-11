@@ -5,9 +5,10 @@ module SparseGrids
 
 include("Types.jl")
 include("Interpolation.jl")
-include("HierarchicalBasis.jl")
+include("1DBasis.jl")
 include("Utilities.jl")
 include("2DBasis.jl")
 include("Derivatives.jl")
+include("FiniteDifferencing.jl")
 
 end # module
