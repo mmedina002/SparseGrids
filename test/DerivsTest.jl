@@ -3,14 +3,15 @@
 
 using PyPlot
 
-x = collect(range(0, stop=1, length = 101))
-for l in 0:3, j in 0:1
-# plot(x, basis.(0, 0, x), "m")
-	plot(x, derivBasis.(l, j, x))
-	xlabel("x")
-	ylabel("phi'(x)")
-	show()
-end
+# x = collect(range(0, stop=1, length = 1025))
+# level = 4
+# for l in 0:level, j in 0:2^l
+# 	plot(x, basis.(l, j, x), "m")
+# 	plot(x, derivBasis.(l, j, x))
+# 	xlabel("x")
+# 	ylabel("phi'(x)")
+# 	show()
+# end
 
 # plot(x, derivBasis.(0, 0, x))
 # plot(x, derivBasis.(0, 1, x))
@@ -20,16 +21,50 @@ end
 # show()
 
 
-# xVal = collect(range(0.0, stop=1.0, length = 129))
-# y = calcNodal(x -> exp(x), xVal)
-# modal = Nodal_2_H(y)
-#
-# dy = zeros(length(xVal))
-# for index in CartesianIndices(xVal)
-# 	dy[index] = derivEvaluate(modal, xVal[index])
-# end
-#
+xVal = collect(range(0.0, stop=1.0, length = 129))
+y = calcNodal(x -> sin(4*pi*x), xVal)
+cosx = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
+modal = Nodal_2_H(y)
+
+dy = zeros(length(xVal))
+for index in CartesianIndices(xVal)
+	dy[index] = derivEvaluate(modal, xVal[index])
+end
+
 # plot(xVal,y.values)
 # plot(xVal,dy, "g .")
-# show()
+# plot(xVal, cosx.values, "r")
+#
+error = cosx.values - dy
+@show error
+plot(xVal, error)
+show()
 
+# error = []
+#
+# level = 4
+# for l in 0:level
+# 	N = 2^l + 1
+#
+# 	xVal = collect(range(0.0, stop=1.0, length = N))
+#
+# 	# Compute the interpolation error
+# 	le = 10 * (2^l+1)
+# 	h = 1/le
+# 	xNew = collect(range(0.0 + h/2, stop=1.0 - h/2, length = le))
+# 	y = calcNodal(x -> sin(4*pi*x), xVal)
+# 	cosx = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
+# 	modal = Nodal_2_H(y)
+# 	f_analytic = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
+#
+# 	dy = zeros(length(xVal))
+# 	for index in CartesianIndices(xVal)
+# 		dy[index] = derivEvaluate(modal, xVal[index])
+# 	end
+#
+# 	error_up_to = sqrt(sum((f_analytic.values - dy).^2)/length(f_analytic.values))
+#
+# 	append!(error, error_up_to)
+#
+# 	@show error
+# end

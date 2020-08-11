@@ -2,7 +2,7 @@
 # July 8, 2020
 # 2D code for Nodal Basis
 
-export maxlevel, getindex, calcNodal2D, basis, x, evaluate, H_2_Nodal, Nodal_2_H_new, Nodal_2_H_sparse
+export maxlevel, getindex, calcNodal2D, basis, x, evaluate, H_2_Nodal, Nodal_2_H_sparse
 
 
 #********** INDEX **********

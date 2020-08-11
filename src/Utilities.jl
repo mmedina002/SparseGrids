@@ -25,9 +25,9 @@ end
 function evaluate_upto(H::HierarchicalBasis{T}, level::Int, x::Float64)::T where {T} 
 	value = T(0)
 	for l in 0:level
-	for j in 0:2^l
-		value = value + H[l, j]*basis(l, j, x)
-	end
+		for j in 0:2^l
+			value = value + H[l, j]*basis(l, j, x)
+		end
 	end
 	return value
 end
