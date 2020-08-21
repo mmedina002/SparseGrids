@@ -21,15 +21,15 @@ using PyPlot
 # show()
 
 
-xVal = collect(range(0.0, stop=1.0, length = 129))
-y = calcNodal(x -> sin(4*pi*x), xVal)
-cosx = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
-modal = Nodal_2_H(y)
-
-dy = zeros(length(xVal))
-for index in CartesianIndices(xVal)
-	dy[index] = derivEvaluate(modal, xVal[index])
-end
+# xVal = collect(range(0.0, stop=1.0, length = 129))
+# y = calcNodal(x -> sin(4*pi*x), xVal)
+# cosx = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
+# modal = Nodal_2_H(y)
+#
+# dy = zeros(length(xVal))
+# for index in CartesianIndices(xVal)
+# 	dy[index] = derivEvaluate(modal, xVal[index])
+# end
 
 # plot(xVal,y.values)
 # plot(xVal,dy, "g .")
@@ -37,31 +37,37 @@ end
 #
 
 error = []
+Num = []
 
-level = 4
+level = 13
 for l in 0:level
 	N = 2^l + 1
 
-	xVal = collect(range(0.0, stop=1.0, length = N))
-	cosx = calcNodal(x -> 4*pi*cos(4*pi*x), xVal)
-	modal_analytic = Nodal_2_H(cosx)
+	xOld = collect(range(0.0, stop=1.0, length = N))
+	U = calcNodal(x -> exp(x), xOld)
+	dU = calcNodal(x -> exp(x), xOld)
+	modal_U = Nodal_2_H(U)
 
 	# Compute the interpolation error
 	le = 10 * (2^l+1)
 	h = 1/le
 	xNew = collect(range(0.0 + h/2, stop=1.0 - h/2, length = le))
-	y = calcNodal(x -> sin(4*pi*x), xNew)
-	modal = Nodal_2_H(y)
-	f_analytic = calcNodal(x -> 4*pi*cos(4*pi*x), xNew)
+	dUNew = calcNodal(x -> exp(x), xNew)
+	dU_from_modal_U = calcNodal(x -> derivEvaluate(modal_U, x), xNew)
 
-	dy = zeros(length(xVal))
-	for index in CartesianIndices(xNew)
-		dy[index] = derivEvaluate(modal, xNew[index])
-	end
 
-	error_up_to = sqrt(sum((f_analytic.values - dy).^2)/length(f_analytic.values))
+	error_up_to = sqrt(sum((dUNew.values - dU_from_modal_U.values).^2)/length(dUNew.values))
 
 	append!(error, error_up_to)
+	append!(Num, N)
 
-	@show error
+	# @show l, N, error_up_to
 end
+
+loglog(Num, error)
+loglog(Num, 1 ./Num)
+loglog(Num, 1 ./(Num.^2))
+show()
+
+
+

@@ -7,7 +7,7 @@ function derivBasis(l::Int, j::Int, x::T)::T where {T}
 	@assert 0 <= l 
 	@assert 0 <= j <= (2^l) 
 	h = 2.0^(-l)
-	eps = 0.001	
+	eps = 1e-10 	
 	if 0 <= x < eps
 		if j == 0
 			return -1/h
