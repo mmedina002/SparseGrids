@@ -1,19 +1,20 @@
 Michelle Medina
 
 ## August 8, 2020
-- Add information to README.md. Describe what sparse grids are, and what the package can do.
-- Convert/delete ipython notebooks to Julia files.
+- DONE ---- Add information to README.md. Describe what sparse grids are, and what the package can do. 
+- DONE ---- Convert/delete ipython notebooks to Julia files. 
 - Cleanup.
 - Implement 1D derivatives
 - Implement 2D derivatives
 - Check convergence for 1D and 2D derivatives
+- linear function
 - Cleanup and consolidate your tests in the test directory.
-- ./Utilities.jl:    # TODO: Fix indentation
-- ./2DBasis.jl:# TODO: Fix or uncomment, or not export functions that aren't used.
-- ./Interpolation.jl:# TODO: Remove unused code; for example, functions line, find_interval and interpolate1D are no longer used.
+- DONE ---- ./Utilities.jl:    # TODO: Fix indentation
+- DONE ---- ./2DBasis.jl:# TODO: Fix or uncomment, or not export functions that aren't used.
+- DONE ---- ./Interpolation.jl:# TODO: Remove unused code; for example, functions line, find_interval and interpolate1D are no longer used.
 - ./Interpolation.jl:    # TODO: Either generalize this function or add a note of the restrictions you impose on the points.
-- ./HierarchicalBasis.jl:# TODO: Make filename consistent with 2DBasis.jl
-- ./HierarchicalBasis.jl:     # TODO: Is this tested?
+- DONE ---- ./HierarchicalBasis.jl:# TODO: Make filename consistent with 2DBasis.jl
+- DONE ---- ./HierarchicalBasis.jl:     # TODO: Is this tested?
 
 
 ## July 21, 2020
