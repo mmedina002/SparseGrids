@@ -38,7 +38,7 @@ xValue = collect(range(0.0, stop=1.0, length = 5))
 nodalTest = calcNodal(x -> exp(x), xValue)
 newVal = Nodal_2_H(nodalTest)
 newVal2 = Nodal_2_H_new(nodalTest)
-# @test isapprox(newVal.Level.coefficients, newVal2.Level.coefficients)
+@test isapprox(newVal.levels[2].coefficients, newVal2.levels[2].coefficients, atol=1e-14)
 
 # Testing error of going up to a certain level
 # using LinearAlgebra
